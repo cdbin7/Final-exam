@@ -1,6 +1,7 @@
 class Api::V1::AuctionsController < Api::ApplicationController
   before_action :find_auction, except: [:index, :create]
-  
+  before_action :authenticate_user!, except: [:index, :show]
+
   def index
     auctions = Auction.order(created_at: :desc)
     render(json: auctions, each_serializer: AuctionCollectionSerializer)
@@ -16,6 +17,7 @@ class Api::V1::AuctionsController < Api::ApplicationController
 
   def create
     auction = Auction.new(params.require(:auction).permit(:title, :body, :price))
+    auction.user = current_user
     if auction.save
       render json: {id: auction.id}
     else
@@ -25,7 +27,7 @@ class Api::V1::AuctionsController < Api::ApplicationController
 
   private
   def find_auction
-    @auction = Auction.find(params[:id])
+    @auction = Auction.find_by_id(params[:id])
   end
 
 end

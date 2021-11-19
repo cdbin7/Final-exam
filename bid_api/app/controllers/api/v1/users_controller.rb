@@ -8,4 +8,8 @@ class Api::V1::UsersController < Api::ApplicationController
       render json: {errors: user.errors.messages, status:422}
     end
   end
+
+  def current
+    render json: current_user
+  end
 end
