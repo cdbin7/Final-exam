@@ -8,15 +8,16 @@ class Api::V1::AuctionsController < Api::ApplicationController
   end
 
   def show
+    bids = Bid.order(price: :desc)
     if @auction
-      render json: @auction
+      render json:{auction: @auction, bids: bids}
     else
       render json: { error: "Auction Not Found" }
     end
   end
 
   def create
-    auction = Auction.new(params.require(:auction).permit(:title, :body, :price))
+    auction = Auction.new(params.require(:auction).permit(:title, :body, :price, :end_at))
     auction.user = current_user
     if auction.save
       render json: {id: auction.id}
